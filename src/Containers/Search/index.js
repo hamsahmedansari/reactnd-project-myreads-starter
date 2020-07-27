@@ -1,28 +1,29 @@
 import React, { Component } from "react";
 import * as BooksAPI from "../../BooksAPI";
 import Book from "../../Components/Book";
+import { Link } from "react-router-dom";
 
 class Search extends Component {
   state = {
     search: "",
     data: [],
-    myBooks:[]
+    myBooks: [],
   };
-  
+
   componentDidMount() {
-    this.getData()
+    this.getData();
   }
-  
+
   handleChange = ({ target: { value } }) => {
     this.setState({ search: value });
     if (value) this.searchDB(value);
     else this.setState({ data: [] });
   };
-  
+
   getData = async () => {
     try {
       const response = await BooksAPI.getAll();
-      this.setState({myBooks:response});
+      this.setState({ myBooks: response });
     } catch (error) {
       console.log("BooksApp -> getData -> error", error);
     }
@@ -31,24 +32,25 @@ class Search extends Component {
     try {
       const response = await BooksAPI.search(String(value).toLocaleLowerCase());
       if (!response.error) {
-        const formatedData = this.formatData(response) 
-        this.setState({ data: formatedData });
-      }
-      else this.setState({ data: [] });
+        const formatedData = this.formatData(response);
+        if (this.state.search === value) {
+          this.setState({ data: formatedData });
+        }
+      } else this.setState({ data: [] });
     } catch (error) {
       console.log("BooksApp -> getData -> error", error);
     }
   };
-  formatData = (data =[])=>{
-    const {myBooks} =this.state;
-    const temp = data.map(element=> {
-      const flag = myBooks.find(d =>d.id === element.id);
-      if(flag) return flag;
-      return element
-    })
-    return temp
-  }
-   handleBookChange = async (value, id) => {
+  formatData = (data = []) => {
+    const { myBooks } = this.state;
+    const temp = data.map((element) => {
+      const flag = myBooks.find((d) => d.id === element.id);
+      if (flag) return flag;
+      return element;
+    });
+    return temp;
+  };
+  handleBookChange = async (value, id) => {
     try {
       await BooksAPI.update({ id }, value);
     } catch (error) {
@@ -60,9 +62,9 @@ class Search extends Component {
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <button className="close-search" onClick={this.props.history.goBack}>
+          <Link className="close-search" to="/">
             Close
-          </button>
+          </Link>
           <div className="search-books-input-wrapper">
             <input
               type="text"

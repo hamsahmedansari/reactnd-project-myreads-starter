@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
 import * as BooksAPI from "../../BooksAPI";
+import { Link } from "react-router-dom";
 
 import BookShelf from "../../Components/BookShelf";
 import LoadingComponent from "../../Components/Loading";
+
+const SHELVES = [
+  {
+    title: "Currently Reading",
+    id: "currentlyReading",
+  },
+  {
+    title: "Want To Read",
+    id: "wantToRead",
+  },
+  {
+    title: "Read",
+    id: "read",
+  },
+];
 
 const BookList = (props) => {
   const [loading, setLoading] = useState(false);
@@ -29,19 +45,14 @@ const BookList = (props) => {
     }
   };
 
-  const goToHome = () => props.history.push("/search");
-
   useEffect(() => {
     getData();
   }, []);
 
-  const currentlyReading = data.filter(
-    (book) => book.shelf === "currentlyReading"
-  );
-
-  const wantToRead = data.filter((book) => book.shelf === "wantToRead");
-
-  const read = data.filter((book) => book.shelf === "read");
+  const booksDataByShelve = SHELVES.map((shelf) => ({
+    ...shelf,
+    data: data.filter((book) => book.shelf === shelf.id),
+  }));
 
   return (
     <div className="list-books">
@@ -50,21 +61,18 @@ const BookList = (props) => {
       </div>
       <div className="list-books-content">
         <div>
-          <BookShelf
-            title="Currently Reading"
-            data={currentlyReading}
-            onChange={handleBookChange}
-          />
-          <BookShelf
-            title="Want to Read"
-            data={wantToRead}
-            onChange={handleBookChange}
-          />
-          <BookShelf title="Read" data={read} onChange={handleBookChange} />
+          {booksDataByShelve.map((bookShelf) => (
+            <BookShelf
+              key={bookShelf.id}
+              title={bookShelf.title}
+              data={bookShelf.data}
+              onChange={handleBookChange}
+            />
+          ))}
         </div>
       </div>
       <div className="open-search">
-        <button onClick={goToHome}>Add a book</button>
+        <Link to="/search">Add a book</Link>
       </div>
       {loading && <LoadingComponent />}
     </div>

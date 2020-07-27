@@ -13,6 +13,7 @@ const Book = (props) => {
   const handleChange = (event) => {
     props.onChange(event.target.value, data.id);
   };
+  const selectedShelf = data.shelf || "none";
   return (
     <li>
       <div className="book">
@@ -23,19 +24,18 @@ const Book = (props) => {
               width: 128,
               height: 193,
               backgroundImage:
-                data.imageLinks.smallThumbnail &&
-                `url("${data.imageLinks.smallThumbnail}")`,
+                data.imageLinks && `url("${data.imageLinks.smallThumbnail}")`,
             }}
           />
           <div className="book-shelf-changer">
-            <select onChange={handleChange} value={data.shelf}>
+            <select onChange={handleChange} value={selectedShelf}>
               <option value="move" disabled>
                 Move to...
               </option>
               {optionsForShelf.map((shelf) => (
                 <option
                   value={shelf.value}
-                  disabled={shelf.value === data.shelf}
+                  disabled={shelf.value === selectedShelf}
                   key={shelf.value}
                 >
                   {shelf.label}
